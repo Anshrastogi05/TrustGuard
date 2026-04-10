@@ -39,7 +39,13 @@ app.add_middleware(
 # -----------------------------
 # Load ML Model
 # -----------------------------
-model = joblib.load("../ml/notebooks/trustguard.pkl")
+# model = joblib.load("../ml/notebooks/trustguard.pkl")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.join(BASE_DIR, "model", "trustguard.pkl")
+
+model = joblib.load(model_path)
 
 scaler = model.named_steps["scaler"]
 lr_model = model.named_steps["model"]
@@ -243,5 +249,9 @@ def predict(data: ProviderFeatures) -> Dict[str, Any]:
         "original_input": data.model_dump()
     }
 
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
